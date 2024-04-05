@@ -9,14 +9,9 @@
 </head>
 <!--This Section of code formats the body of the file.-->
 <body class="bg-dark">
-
-    <!--<div class="vh-100 d-flex justify-content-center align-items-center">
-    <img src="https://plus.unsplash.com/premium_photo-1664527009217-7ab29b61bd3f?w=200&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGNoaWNrZW4lMjBjb29wfGVufDB8fDB8fHww" alt="plus.unsplash.com" style="width:100px;height:100px">
-    </div>
-    -->
     <!-- The navigation bar -->
         <nav class="navbar navbar-expand-lg bg-success" data-bs-theme="dark"> <!--Source for NavBar: https://bootswatch.com/yeti/-->
-                                                                                                 <!--Edited by Nolen-->
+                                                                                                
             <div class="container-fluid">
                 <!-- The brand logo -->
                 <a class="navbar-brand" href="#">Smart Coop</a>
@@ -33,7 +28,7 @@
                             </a>
                         </li>
                     </ul>
-                        <!-- The account dropdown. I tried to make it so it is aligned to the right, but it kept breaking. -->
+                        <!-- The account dropdown. -->
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account</a>
@@ -176,7 +171,6 @@
     var strCoopID;
     
     //Generates a new Coop ID when web page is loaded and pre-fills the Coop ID input on the registration page.
-    //This may need to be edited later on.
     $.post('https://simplecoop.swollenhippo.com/coop.php', function(result) {
         result = JSON.parse(result);
         strCoopID = result.CoopID;
@@ -218,7 +212,6 @@
                 $('#txtLastName').val('');
                 $('#txtEmail').val('');
                 $('#txtPassword').val('');
-                //$('#txtRegistrationID').val('');
                 $('#txtStreetAddress1').val('');
                 $('#txtStreetAddress2').val('');
                 $('#txtCity').val('');
@@ -319,8 +312,6 @@
         let strState = $('#txtState').val();
         let strZipCode = $('#txtZipCode').val();
         let strPhoneNumber = $('#txtPhoneNumber').val();
-        /*Not sure if this is supposed to be the same thing as the coop ID;
-          will try to look into this later. */
         let strRegistrationID = $('#txtRegistrationID').val();
     
         //Checks if the email follows the selected format
@@ -387,11 +378,7 @@
             blnError = true;
             strErrorMessage = strErrorMessage + '<p>Mobile Number cannot be blank. </p>';
         }
-        //Checks if registration ID is 3870
-        /*if (strRegistrationID != 3870){
-            blnError = true;
-            strErrorMessage = strErrorMessage + '<p>The registartion ID is incorrect. </p>';
-        }*/ //COMMENTED OUT FOR NOW; may have to be uncommented later
+
         //Dispalys sweet alert if any of the conditional error statements were triggered as error
         // This if else block checks to see if there is an error then pops up
         // with an appropriate sweet alert message
@@ -417,7 +404,6 @@
                 })
                 console.log('No errors found');
                 //Create new user
-                //Should this behave differently if someone tries to create an account that already exists?
                 $.post('https://simplecoop.swollenhippo.com/users.php', {Email:strEmail,Password:strPassword,FirstName:strFirstName,LastName:strLastName,CoopID:strRegistrationID}, function(result) {
                     result = JSON.parse(result);
                     console.log(result.Outcome);
@@ -432,11 +418,9 @@
                         url: 'https://simplecoop.swollenhippo.com/coop.php',
                         type: 'PUT',
                         data: {SessionID:sessionStorage.getItem('SessionID'),Street1:strStreetAddress1,Street2:strStreetAddress2,City:strCity,State:strState,ZIP:strZipCode}, //Is this right?
-                        //Should I change name of the callback function parameter?
                         success: function(coopUpdate) {
                             coopUpdate = JSON.parse(coopUpdate)
                             console.log(coopUpdate.Outcome);
-                            //This method may need to be put elsewhere instead of here
                             $.getJSON('https://simplecoop.swollenhippo.com/coop.php', {SessionID:sessionStorage.getItem('SessionID')}, function(coopResults) {
                                 coopResults.forEach(function(strCoopDetail) {
                                     console.log(strCoopDetail);
@@ -445,9 +429,7 @@
                         }
                     })
                 })
-            })
-                //New session and update/retrieve coop details (may need to add method to delete sesssion as well)
-                
+            })  
         }
     })
     //Click event for the Login Button
@@ -508,9 +490,8 @@
                     } 
                     else{
                     //If verification passes, slide down login page and slide up dashboard page
-                        $.post('https://simplecoop.swollenhippo.com/sessions.php', {Email:strEmail,Password:strPassword}, function(result){
+                        $.post('https://simplecoop.swollenhippo.com/sessions.php', {Email:strLoginEmail,Password:strLoginPassword}, function(result){
                             //The names of the JSON values passed may need to be changed
-                            //Should I change names of callback function parameters?
                             result = JSON.parse(result)
                             console.log(result);
                             sessionStorage.setItem('SessionID', result.SessionID);
@@ -526,7 +507,7 @@
         })
     })
     
-    //This function shows up on the dashboard 
+    //This function shows up on the dashboard and gives the user the option to logout
     $('#btnLogout').on('click', function(){
     $.ajax({
             url: 'https://simplecoop.swollenhippo.com/sessions.php',
